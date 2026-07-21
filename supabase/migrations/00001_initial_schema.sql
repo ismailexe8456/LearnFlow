@@ -10,9 +10,7 @@ CREATE TABLE profiles (
   avatar_url TEXT,
   xp INTEGER DEFAULT 0 NOT NULL,
   coins INTEGER DEFAULT 0 NOT NULL,
-  is_kids_mode BOOLEAN GENERATED ALWAYS AS (
-    EXTRACT(YEAR FROM age(date_of_birth)) <= 12
-  ) STORED,
+  is_kids_mode BOOLEAN DEFAULT false NOT NULL,
   created_at TIMESTAMPTZ DEFAULT now() NOT NULL,
   updated_at TIMESTAMPTZ DEFAULT now() NOT NULL
 );
@@ -33,13 +31,14 @@ CREATE POLICY "Users can update own profile."
 CREATE OR REPLACE FUNCTION handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
-  INSERT INTO public.profiles (id, full_name, role, date_of_birth, avatar_url)
+  INSERT INTO public.profiles (id, full_name, role, date_of_birth, avatar_url, is_kids_mode)
   VALUES (
     new.id,
     COALESCE(new.raw_user_meta_data->>'full_name', 'Student'),
     COALESCE((new.raw_user_meta_data->>'role')::user_role, 'student'::user_role),
     (new.raw_user_meta_data->>'date_of_birth')::DATE,
-    new.raw_user_meta_data->>'avatar_url'
+    new.raw_user_meta_data->>'avatar_url',
+    COALESCE((new.raw_user_meta_data->>'is_kids_mode')::BOOLEAN, false)
   );
   RETURN new;
 END;
