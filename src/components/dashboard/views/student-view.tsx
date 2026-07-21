@@ -1,6 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { BookOpen, Trophy, Sparkles, Brain, Gamepad2, Star, Flame } from 'lucide-react'
+import { AIChat } from '../ai-chat'
 
 export function StudentDashboard({ profile }: { profile: any }) {
   const isKidsMode = profile.is_kids_mode;
@@ -117,27 +118,9 @@ export function StudentDashboard({ profile }: { profile: any }) {
           </CardContent>
         </Card>
 
-        <Card className="col-span-3 bg-gradient-to-br from-indigo-500/10 to-purple-500/10 backdrop-blur-md border-purple-500/20">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Brain className="w-5 h-5 text-purple-500" />
-              Notebook AI
-            </CardTitle>
-            <CardDescription>Upload a document to generate instant study materials.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4 text-center">
-            <div className="py-8">
-              <div className="w-16 h-16 bg-white dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg shadow-purple-500/20">
-                <Sparkles className="w-8 h-8 text-purple-500" />
-              </div>
-              <h3 className="font-semibold text-lg">Generate Study Guide</h3>
-              <p className="text-sm text-muted-foreground mt-2 max-w-[200px] mx-auto">Drop a PDF or PPTX to instantly get flashcards and summaries.</p>
-            </div>
-            <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white shadow-md shadow-purple-600/20">
-              Upload Document
-            </Button>
-          </CardContent>
-        </Card>
+        <div className="col-span-3">
+          <AIChat />
+        </div>
       </div>
     </div>
   )
