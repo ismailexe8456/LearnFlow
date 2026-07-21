@@ -25,17 +25,15 @@ export function Topbar({ userProfile }: { userProfile: any }) {
         </div>
         
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-              <Avatar className="h-10 w-10 border border-slate-200 dark:border-slate-800">
-                <AvatarImage src={userProfile?.avatar_url || ''} alt={userProfile?.full_name || '@user'} />
-                <AvatarFallback className="bg-gradient-to-br from-indigo-400 to-purple-500 text-white">
-                  {userProfile?.full_name?.charAt(0) || 'U'}
-                </AvatarFallback>
-              </Avatar>
-            </Button>
+          <DropdownMenuTrigger className="relative h-10 w-10 rounded-full cursor-pointer outline-none hover:opacity-80 transition-opacity">
+            <Avatar className="h-10 w-10 border border-slate-200 dark:border-slate-800">
+              <AvatarImage src={userProfile?.avatar_url || ''} alt={userProfile?.full_name || '@user'} />
+              <AvatarFallback className="bg-gradient-to-br from-indigo-400 to-purple-500 text-white">
+                {userProfile?.full_name?.charAt(0) || 'U'}
+              </AvatarFallback>
+            </Avatar>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56" align="end" forceMount>
+          <DropdownMenuContent className="w-56" align="end">
             <DropdownMenuLabel className="font-normal">
               <div className="flex flex-col space-y-1">
                 <p className="text-sm font-medium leading-none">{userProfile?.full_name}</p>
@@ -52,8 +50,8 @@ export function Topbar({ userProfile }: { userProfile: any }) {
               Settings
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-              <form action={logout} className="w-full cursor-pointer">
+            <DropdownMenuItem>
+              <form action={async () => { "use server"; await logout() }} className="w-full cursor-pointer">
                 <button type="submit" className="w-full text-left">Log out</button>
               </form>
             </DropdownMenuItem>

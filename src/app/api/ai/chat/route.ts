@@ -43,13 +43,13 @@ Never make up fake information. Use an encouraging, educational tone.`
 - If they ask for a summary, format it beautifully.`
     }
 
-    const result = streamText({
-      model: google('gemini-2.5-flash'), // or gemini-2.5-pro for advanced
+    const result = await streamText({
+      model: google('gemini-2.5-flash') as any, // Bypass V1/V4 SDK version mismatch
       system: systemPrompt,
       messages,
     })
 
-    return result.toDataStreamResponse()
+    return result.toAIStreamResponse()
   } catch (error) {
     console.error('AI Error:', error)
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
