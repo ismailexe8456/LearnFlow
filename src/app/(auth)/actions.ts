@@ -89,7 +89,13 @@ export async function signup(formData: FormData) {
   })
 
   if (error) {
-    const errorMsg = getErrorMessage(error, 'Registration failed. Please try a different email or password.')
+    console.error('RAW SUPABASE SIGNUP ERROR:', {
+      message: error.message,
+      status: error.status,
+      name: error.name,
+      code: error.code
+    })
+    const errorMsg = getErrorMessage(error, error.message || 'Registration failed. Please check your credentials and try again.')
     redirect(`/register?error=${encodeURIComponent(errorMsg)}`)
   }
 
@@ -105,7 +111,8 @@ export async function signup(formData: FormData) {
   })
 
   if (signInError) {
-    redirect(`/login?error=${encodeURIComponent('Account created successfully! Please sign in with your email and password.')}`)
+    console.error('SUPABASE AUTO SIGNIN ERROR:', signInError)
+    redirect(`/login?error=${encodeURIComponent('Account created! Please sign in with your email and password.')}`)
   }
 
   revalidatePath('/', 'layout')
