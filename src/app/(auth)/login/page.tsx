@@ -28,7 +28,7 @@ export default function LoginPage() {
             
             {['student', 'teacher'].map((role) => (
               <TabsContent key={role} value={role}>
-                <form action={async (formData) => { await login(formData) }} className="space-y-4">
+                <form action={login} className="space-y-4">
                   <input type="hidden" name="role" value={role} />
                   <div className="space-y-2">
                     <Label htmlFor={`${role}-email`}>Email</Label>

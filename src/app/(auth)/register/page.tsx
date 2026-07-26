@@ -28,7 +28,7 @@ export default function RegisterPage() {
             
             {['student', 'teacher'].map((role) => (
               <TabsContent key={role} value={role}>
-                <form action={async (formData) => { await signup(formData) }} className="space-y-4">
+                <form action={signup} className="space-y-4">
                   <input type="hidden" name="role" value={role} />
                   
                   <div className="space-y-2">
