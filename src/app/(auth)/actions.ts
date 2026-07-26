@@ -6,9 +6,20 @@ import { createClient } from '@/utils/supabase/server'
 
 function getErrorMessage(err: any, fallback: string): string {
   if (!err) return fallback
-  if (typeof err === 'string') return err
-  if (typeof err.message === 'string' && err.message && err.message !== '{}') return err.message
-  if (typeof err.error_description === 'string' && err.error_description) return err.error_description
+  if (typeof err === 'string' && err.trim() && err !== '{}') return err
+  
+  const msg = err.message || err.error_description || err.msg
+  if (typeof msg === 'string' && msg.trim() && msg !== '{}') {
+    if (msg.toLowerCase().includes('already registered') || msg.toLowerCase().includes('already exists')) {
+      return 'An account with this email already exists. Please sign in instead.'
+    }
+    return msg
+  }
+
+  if (err.code === 'user_already_exists') {
+    return 'An account with this email already exists. Please sign in instead.'
+  }
+
   return fallback
 }
 

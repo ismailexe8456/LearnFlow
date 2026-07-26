@@ -54,8 +54,8 @@ export default async function RegisterPage({
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor={`${role}-dob`}>Date of Birth</Label>
-                    <Input id={`${role}-dob`} name="dateOfBirth" type="date" required className="bg-white/50 dark:bg-black/40 border-white/30 backdrop-blur-sm" />
+                    <Label htmlFor={`${role}-dob`}>Date of Birth (Optional)</Label>
+                    <Input id={`${role}-dob`} name="dateOfBirth" type="date" className="bg-white/50 dark:bg-black/40 border-white/30 backdrop-blur-sm" />
                     {role === 'student' && (
                       <p className="text-[10px] text-muted-foreground">Used to enable Kids Mode for users under 13.</p>
                     )}
