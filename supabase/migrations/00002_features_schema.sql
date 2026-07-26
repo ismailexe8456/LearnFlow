@@ -1,16 +1,28 @@
 -- Add is_admin to profiles
 ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS is_admin BOOLEAN DEFAULT false NOT NULL;
 
--- Update handle_new_user to include is_admin
+-- Update handle_new_user to include is_admin and safe date handling
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
+DECLARE
+  dob_text TEXT;
+  dob_val DATE := NULL;
 BEGIN
+  dob_text := new.raw_user_meta_data->>'date_of_birth';
+  IF dob_text IS NOT NULL AND dob_text != '' THEN
+    BEGIN
+      dob_val := dob_text::DATE;
+    EXCEPTION WHEN OTHERS THEN
+      dob_val := NULL;
+    END;
+  END IF;
+
   INSERT INTO public.profiles (id, full_name, role, date_of_birth, avatar_url, is_kids_mode, is_admin)
   VALUES (
     new.id,
     COALESCE(new.raw_user_meta_data->>'full_name', 'User'),
     COALESCE((new.raw_user_meta_data->>'role')::user_role, 'student'::user_role),
-    (new.raw_user_meta_data->>'date_of_birth')::DATE,
+    dob_val,
     new.raw_user_meta_data->>'avatar_url',
     COALESCE((new.raw_user_meta_data->>'is_kids_mode')::BOOLEAN, false),
     COALESCE((new.raw_user_meta_data->>'is_admin')::BOOLEAN, false)
