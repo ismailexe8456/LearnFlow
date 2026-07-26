@@ -20,6 +20,10 @@ function getErrorMessage(err: any, fallback: string): string {
     return 'An account with this email already exists. Please sign in instead.'
   }
 
+  if (typeof err.statusText === 'string' && err.statusText) {
+    return err.statusText
+  }
+
   return fallback
 }
 

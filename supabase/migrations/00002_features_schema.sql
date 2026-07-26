@@ -1,7 +1,7 @@
 -- Add is_admin to profiles
 ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS is_admin BOOLEAN DEFAULT false NOT NULL;
 
--- Update handle_new_user to include is_admin and safe date handling
+-- Update handle_new_user to include is_admin and safe fallback
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 DECLARE
@@ -17,16 +17,29 @@ BEGIN
     END;
   END IF;
 
-  INSERT INTO public.profiles (id, full_name, role, date_of_birth, avatar_url, is_kids_mode, is_admin)
-  VALUES (
-    new.id,
-    COALESCE(new.raw_user_meta_data->>'full_name', 'User'),
-    COALESCE((new.raw_user_meta_data->>'role')::user_role, 'student'::user_role),
-    dob_val,
-    new.raw_user_meta_data->>'avatar_url',
-    COALESCE((new.raw_user_meta_data->>'is_kids_mode')::BOOLEAN, false),
-    COALESCE((new.raw_user_meta_data->>'is_admin')::BOOLEAN, false)
-  );
+  BEGIN
+    INSERT INTO public.profiles (id, full_name, role, date_of_birth, avatar_url, is_kids_mode, is_admin)
+    VALUES (
+      new.id,
+      COALESCE(new.raw_user_meta_data->>'full_name', 'User'),
+      COALESCE((new.raw_user_meta_data->>'role')::user_role, 'student'::user_role),
+      dob_val,
+      new.raw_user_meta_data->>'avatar_url',
+      COALESCE((new.raw_user_meta_data->>'is_kids_mode')::BOOLEAN, false),
+      COALESCE((new.raw_user_meta_data->>'is_admin')::BOOLEAN, false)
+    );
+  EXCEPTION WHEN OTHERS THEN
+    INSERT INTO public.profiles (id, full_name, role, date_of_birth, avatar_url, is_kids_mode)
+    VALUES (
+      new.id,
+      COALESCE(new.raw_user_meta_data->>'full_name', 'User'),
+      COALESCE((new.raw_user_meta_data->>'role')::user_role, 'student'::user_role),
+      dob_val,
+      new.raw_user_meta_data->>'avatar_url',
+      COALESCE((new.raw_user_meta_data->>'is_kids_mode')::BOOLEAN, false)
+    );
+  END;
+
   RETURN new;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
