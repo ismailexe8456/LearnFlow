@@ -71,7 +71,7 @@ export async function signup(formData: FormData) {
     }
   }
 
-  const { error } = await supabase.auth.signUp({
+  const { data: signUpData, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
@@ -89,6 +89,11 @@ export async function signup(formData: FormData) {
     redirect(`/register?error=${encodeURIComponent(errorMsg)}`)
   }
 
+  // Check if user already exists in Supabase (identities array is empty)
+  if (signUpData?.user && signUpData.user.identities && signUpData.user.identities.length === 0) {
+    redirect(`/login?error=${encodeURIComponent('An account with this email already exists. Please sign in instead.')}`)
+  }
+
   // Attempt auto sign in
   const { error: signInError } = await supabase.auth.signInWithPassword({
     email,
@@ -96,8 +101,7 @@ export async function signup(formData: FormData) {
   })
 
   if (signInError) {
-    const signInMsg = getErrorMessage(signInError, 'Account created! Please sign in with your email and password.')
-    redirect(`/login?error=${encodeURIComponent(`Account created! ${signInMsg}`)}`)
+    redirect(`/login?error=${encodeURIComponent('Account created successfully! Please sign in with your email and password.')}`)
   }
 
   revalidatePath('/', 'layout')
