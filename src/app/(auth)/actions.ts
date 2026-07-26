@@ -4,6 +4,14 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/utils/supabase/server'
 
+function getErrorMessage(err: any, fallback: string): string {
+  if (!err) return fallback
+  if (typeof err === 'string') return err
+  if (typeof err.message === 'string' && err.message && err.message !== '{}') return err.message
+  if (typeof err.error_description === 'string' && err.error_description) return err.error_description
+  return fallback
+}
+
 export async function login(formData: FormData) {
   const supabase = await createClient()
   
@@ -20,7 +28,7 @@ export async function login(formData: FormData) {
   })
 
   if (error) {
-    const errorMsg = error.message || 'Invalid login credentials'
+    const errorMsg = getErrorMessage(error, 'Invalid email or password.')
     redirect(`/login?error=${encodeURIComponent(errorMsg)}`)
   }
 
@@ -66,7 +74,7 @@ export async function signup(formData: FormData) {
   })
 
   if (error) {
-    const errorMsg = error.message || 'Registration failed'
+    const errorMsg = getErrorMessage(error, 'Registration failed. Please try a different email or password.')
     redirect(`/register?error=${encodeURIComponent(errorMsg)}`)
   }
 
@@ -77,7 +85,8 @@ export async function signup(formData: FormData) {
   })
 
   if (signInError) {
-    redirect(`/login?error=${encodeURIComponent('Account created! Please sign in with your password.')}`)
+    const signInMsg = getErrorMessage(signInError, 'Account created! Please sign in with your email and password.')
+    redirect(`/login?error=${encodeURIComponent(`Account created! ${signInMsg}`)}`)
   }
 
   revalidatePath('/', 'layout')

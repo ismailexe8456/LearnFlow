@@ -12,6 +12,7 @@ export default async function LoginPage({
   searchParams: Promise<{ error?: string }>
 }) {
   const { error } = await searchParams
+  const cleanError = (error && error !== '{}' && error !== '%7B%7D' && error !== '[object Object]') ? error : null
 
   return (
     <div className="flex min-h-screen items-center justify-center p-4 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 dark:from-indigo-950 dark:via-purple-950 dark:to-pink-950">
@@ -26,9 +27,9 @@ export default async function LoginPage({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {error && (
+          {cleanError && (
             <div className="mb-4 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 text-sm text-center">
-              {error}
+              {cleanError}
             </div>
           )}
           <Tabs defaultValue="student" className="w-full">
